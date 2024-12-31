@@ -7,7 +7,7 @@ from pathlib import Path
 platform = sys.platform
 if platform == 'win32':
     path = Path.home()/'AppData'/'Roaming'/'Cursor'/'User'/'globalStorage'
-elif platform == 'darwin':
+elif platform == 'darwin': # macOS
     path = Path.home()/'Library'/'Application Support'/'Cursor'/'User'/'globalStorage'
 elif platform == 'linux':
     path = Path.home()/'.config'/'Cursor'/'User'/'globalStorage'
@@ -28,13 +28,20 @@ try:
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    new_id = str(uuid.uuid4())
-    data['telemetry.macMachineId'] = new_id
+    machine_id = os.urandom(32).hex()
+    mac_machine_id = os.urandom(32).hex()
+    dev_device_id = str(uuid.uuid4())
+
+    data["telemetry.machineId"] = machine_id
+    data["telemetry.macMachineId"] = mac_machine_id
+    data["telemetry.devDeviceId"] = dev_device_id
 
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
 
-    print(f"New ID: {new_id}")
+    print(f"machine_id: {machine_id}")
+    print(f"mac_machine_id: {mac_machine_id}")
+    print(f"dev_device_id: {dev_device_id}")
     print("Success!")
     print("\nPress Enter to exit...")
     input()
